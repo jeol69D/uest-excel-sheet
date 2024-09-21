@@ -1,0 +1,10 @@
+# requeriments.txt
+fastapi
+uvicorn
+motor
+openpyxl
+python-multipart
+python-dotenv
+python-jose[cryptography]
+passlib[bcrypt]
+
