@@ -3,6 +3,16 @@ from app.routes import excel_routes
 from app.config import settings  # Importar configuración
 from app.middleware import ExceptionHandlerMiddleware
 from fastapi.middleware.cors import CORSMiddleware
+import os
+from dotenv import load_dotenv
+
+# Cargar variables de entorno del archivo .env
+load_dotenv()
+
+# Obtener la URI de MongoDB de las variables de entorno
+MONGO_URI = os.getenv("MONGO_URI")
+MONGO_DB = os.getenv("MONGO_DB")
+
 
 app = FastAPI()
 

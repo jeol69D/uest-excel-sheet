@@ -14,6 +14,19 @@ class Settings:
     
     @property
     def is_production(self) -> bool:
-        return self.APP_ENV == "production"
+        return self.APP_ENV.lower() == "production"
+
+    def display_settings(self):
+        return {
+            "MONGO_URI": self.MONGO_URI,
+            "MONGO_DB": self.MONGO_DB,
+            "APP_PORT": self.APP_PORT,
+            "APP_ENV": self.APP_ENV,
+            "is_production": self.is_production,
+        }
 
 settings = Settings()
+
+# Opcional: Imprimir la configuración para verificar
+if __name__ == "__main__":
+    print(settings.display_settings())
