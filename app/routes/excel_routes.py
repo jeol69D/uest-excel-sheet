@@ -1,10 +1,9 @@
 from fastapi import APIRouter, UploadFile, HTTPException, status, Depends
 from openpyxl import load_workbook
-from app.database import excel_collection
+from app.database import excel_collection, user_collection
 from app.models.excel_model import ExcelSheetModel
-from app.auth import oauth2_scheme  # Asumiendo que oauth2_scheme está configurado para manejo de tokens
+from app.auth import oauth2_scheme, get_user
 from pydantic import ValidationError
-from typing import List
 import hashlib
 import logging
 
@@ -28,7 +27,12 @@ async def upload_excel(file: UploadFile, token: str = Depends(oauth2_scheme)):
     if file.content_type != "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
         logger.error("Invalid file type.")
         raise HTTPException(status_code=400, detail="Invalid file type. Only Excel files are allowed.")
-    
+
+    # Obtener el usuario a partir del token
+    user = await get_user(token)  
+    if user is None:
+        raise HTTPException(status_code=403, detail="Could not validate credentials.")
+
     try:
         # Calcular el hash del archivo para verificar idempotencia
         file_hash = calculate_file_hash(file)
@@ -54,7 +58,7 @@ async def upload_excel(file: UploadFile, token: str = Depends(oauth2_scheme)):
         if not columns or not rows:
             logger.error("Excel file is empty or malformed.")
             raise HTTPException(status_code=400, detail="Excel file is empty or malformed.")
-        
+
         # Validar si las columnas necesarias están presentes
         required_columns = {"Name", "Age", "City"}
         if not required_columns.issubset(set(columns)):
@@ -81,8 +85,6 @@ async def upload_excel(file: UploadFile, token: str = Depends(oauth2_scheme)):
         logger.error(f"An error occurred: {e}")
         raise HTTPException(status_code=500, detail=f"An error occurred: {e}")
 
-
-# Ruta protegida de prueba para asegurar que el token funcione
 @router.get("/protected-route")
 async def protected_route(token: str = Depends(oauth2_scheme)):
     return {"message": "You have access to the protected route with a valid token."}

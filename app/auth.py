@@ -1,10 +1,11 @@
 # app/auth.py
-
-from fastapi import Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-from jose import JWTError, jwt
+from fastapi.security import OAuth2PasswordBearer
+from jose import jwt
 from passlib.context import CryptContext
 from datetime import datetime, timedelta
+from app.database import user_collection  
+from app.models.user_model import UserModel
+
 
 SECRET_KEY = "your_secret_key"  # Cambia esto por un valor más seguro
 ALGORITHM = "HS256"
@@ -29,3 +30,9 @@ def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
 
 # Implementa la función para obtener el usuario
+async def get_user(username: str) -> UserModel:
+    user_data = await user_collection.find_one({"username": username})  # Busca en tu base de datos
+    if user_data:
+        return UserModel(id=str(user_data["_id"]), username=user_data["username"], hashed_password=user_data["hashed_password"])
+    return None
+

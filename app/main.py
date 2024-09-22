@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from app.routes import excel_routes
+from app.routes import excel_routes, auth_routes
 from app.config import settings  # Importar configuración
 from app.middleware import ExceptionHandlerMiddleware
 from fastapi.middleware.cors import CORSMiddleware
@@ -35,6 +35,8 @@ app.add_middleware(ExceptionHandlerMiddleware)
 
 # Incluir rutas
 app.include_router(excel_routes.router)
+app.include_router(auth_routes.router)
+
 
 # Ruta de prueba
 @app.get("/")
