@@ -2,6 +2,7 @@
 fastapi
 uvicorn
 motor
+pydantic
 openpyxl
 python-multipart
 python-dotenv

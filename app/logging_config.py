@@ -1,3 +1,4 @@
+# app/logging_config.py
 import logging
 
 # Configuración básica de logging
